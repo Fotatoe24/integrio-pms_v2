@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, normalizeRole } from "@/lib/auth";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
@@ -12,6 +12,7 @@ export default function DashboardPage() {
     revenue: 0,
   });
   const [userName, setUserName] = useState("there");
+  const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
     document.title = "Dashboard";
@@ -22,6 +23,7 @@ export default function DashboardPage() {
       const user = getCurrentUser();
       if (!user) return;
       setUserName(user.name || "there");
+      setIsOwner(normalizeRole(user.role) === "OWNER");
 
       const ownerId = user.owner_id ?? user.id;
 
@@ -189,11 +191,18 @@ export default function DashboardPage() {
               href: "/dashboard/bookings",
               bg: "var(--brand-text)",
             },
-            {
-              label: "↻ Sync iCal",
-              href: "/dashboard/ical",
-              bg: "var(--brand-text)",
-            },
+            // iCal sync is an Owner-only management feature (see
+            // middleware.ts ROUTE_ROLES) — hidden here for Booker so this
+            // isn't a dead link that just bounces them back.
+            ...(isOwner
+              ? [
+                  {
+                    label: "↻ Sync iCal",
+                    href: "/dashboard/ical",
+                    bg: "var(--brand-text)",
+                  },
+                ]
+              : []),
           ].map((action) => (
             <a
               key={action.label}

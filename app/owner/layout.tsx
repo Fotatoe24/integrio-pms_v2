@@ -17,6 +17,7 @@ const NAV_ITEMS: { href: string; label: string }[] = [
   { href: "/owner/calendar", label: "Calendar" },
   { href: "/owner/bills", label: "Bills" },
   { href: "/owner/expense-requests", label: "Expense Requests" },
+  { href: "/dashboard/ical", label: "iCal Sync" },
   { href: "/auditor", label: "Audit" },
 ];
 
